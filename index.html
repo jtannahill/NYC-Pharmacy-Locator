@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NYC Pharmacy Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        h1 { text-align: center; font-size: 6vw; margin: 10px 0; }
+        .tabs { text-align: center; margin: 10px 0; }
+        .tabs button {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        #mapContainer, #listView {
+            display: none;
+        }
+        #mapContainer.active, #listView.active {
+            display: block;
+        }
+        #map {
+            height: 80vh;
+            width: 100%;
+        }
+        #listView {
+            padding: 10px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .pharmacy {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .pharmacy h3 { margin: 0; font-size: 1.1em; }
+        .pharmacy p { margin: 3px 0; font-size: 0.95em; }
+    </style>
+</head>
+<body>
+    <h1>NYC Pharmacy Map</h1>
+    <div class="tabs">
+        <button onclick="showView('map')">🗺 Map View</button>
+        <button onclick="showView('list')">📋 List View</button>
+    </div>
+    <div id="mapContainer"><iframe id="map" src="map_embed.html" frameborder="0"></iframe></div>
+    <div id="listView">
+
+    <div class="pharmacy">
+        <h3>Meds Pharmacy</h3>
+        <p>1104 2nd Ave, New York, NY 10022</p>
+        <p><a href='tel:2123716000'>212-371-6000</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>51st St and Lexington Ave, New York, NY 10022</p>
+        <p><a href='tel:2122078274'>212-207-8274</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Capsule Pharmacy</h3>
+        <p>20 W 36th St, New York, NY 10018</p>
+        <p><a href='tel:2126753900'>212-675-3900</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Eisler Chemists</h3>
+        <p>1140 Lexington Ave, New York, NY 10021</p>
+        <p><a href='tel:2127444144'>212-744-4144</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>1235 Lexington Ave, New York, NY 10028</p>
+        <p><a href='tel:2125702710'>212-570-2710</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Caligor Pharmacy</h3>
+        <p>1226 Lexington Ave, New York, NY 10028</p>
+        <p><a href='tel:2123696000'>212-369-6000</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy</h3>
+        <p>1294 Lexington Ave, New York, NY 10128</p>
+        <p><a href='tel:2129963000'>212-996-3000</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy</h3>
+        <p>1396 2nd Ave, New York, NY 10021</p>
+        <p><a href='tel:2122495699'>212-249-5699</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Rx Exclusive</h3>
+        <p>1229 3rd Ave, New York, NY 10021</p>
+        <p><a href='tel:2122491050'>212-249-1050</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Health Wise Pharmacy</h3>
+        <p>1494 York Ave, New York, NY 10075</p>
+        <p><a href='tel:2124725600'>212-472-5600</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Walgreens Pharmacy</h3>
+        <p>1498 York Ave, New York, NY 10075</p>
+        <p><a href='tel:2128798990'>212-879-8990</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy</h3>
+        <p>1500 Lexington Ave, New York, NY 10029</p>
+        <p><a href='tel:2122893846'>212-289-3846</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>1915 3rd Ave, New York, NY 10029</p>
+        <p><a href='tel:9174921038'>917-492-1038</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Metro RX</h3>
+        <p>300 E 102nd St, New York, NY 10029</p>
+        <p><a href='tel:2128311222'>212-831-1222</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>609 Columbus Ave, New York, NY 10024</p>
+        <p><a href='tel:2127244270'>212-724-4270</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy</h3>
+        <p>743 Amsterdam Ave, New York, NY 10025</p>
+        <p><a href='tel:2122800596'>212-280-0596</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Joseph’s Pharmacy</h3>
+        <p>216 W 72nd St, New York, NY 10023</p>
+        <p><a href='tel:2128751718'>212-875-1718</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>2069 Broadway, New York, NY 10023</p>
+        <p><a href='tel:2127991067'>212-799-1067</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>380 Amsterdam Ave, New York, NY 10024</p>
+        <p><a href='tel:2125797246'>212-579-7246</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>123-133 3rd Ave, New York, NY 10003</p>
+        <p><a href='tel:2125297140'>212-529-7140</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy</h3>
+        <p>540 Amsterdam Ave, New York, NY 10024</p>
+        <p><a href='tel:2127122821'>212-712-2821</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy</h3>
+        <p>Between 81st & 82nd, New York, NY</p>
+        <p><a href='tel:2122495198'>212-249-5198</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade (Closed)</h3>
+        <p>1231 Madison Ave, New York, NY 10128</p>
+        <p><a href='tel:2123606586'>212-360-6586</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>CVS Pharmacy (Closed)</h3>
+        <p>1241 Lexington Ave, New York, NY 10028</p>
+        <p><a href='tel:2125353438'>212-535-3438</a></p>
+    </div>
+    
+    <div class="pharmacy">
+        <h3>Duane Reade</h3>
+        <p>1091 Lexington Ave, New York, NY 10075</p>
+        <p><a href='tel:2127947100'>212-794-7100</a></p>
+    </div>
+    
+    </div>
+    <script>
+        function showView(view) {
+            document.getElementById('mapContainer').classList.remove('active');
+            document.getElementById('listView').classList.remove('active');
+            if (view === 'map') {
+                document.getElementById('mapContainer').classList.add('active');
+            } else {
+                document.getElementById('listView').classList.add('active');
+            }
+        }
+        window.onload = function() {
+            showView('map');
+        }
+    </script>
+</body>
+</html>
