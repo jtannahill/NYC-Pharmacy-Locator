@@ -122,7 +122,22 @@
                 iconColor: 'white'
             });
 
-            
+            L.marker([40.77353, -73.95878], { icon: markerIcon })
+  .addTo(map)
+  .bindPopup("<strong>Duane Reade</strong><br>1091 Lexington Ave, New York, NY 10075<br><a href='tel:2127947100'>212-794-7100</a>")
+  .bindTooltip('Duane Reade');
+L.marker([40.75023, -73.98561], { icon: markerIcon })
+  .addTo(map)
+  .bindPopup("<strong>CVS Pharmacy</strong><br>20 W 36th St, New York, NY 10018<br><a href='tel:2126753900'>212-675-3900</a>")
+  .bindTooltip('CVS Pharmacy');
+L.marker([40.77026, -73.95746], { icon: markerIcon })
+  .addTo(map)
+  .bindPopup("<strong>CVS Pharmacy</strong><br>1396 2nd Ave, New York, NY 10021<br><a href='tel:2122495699'>212-249-5699</a>")
+  .bindTooltip('CVS Pharmacy');
+L.marker([40.77723, -73.95542], { icon: markerIcon })
+  .addTo(map)
+  .bindPopup("<strong>CVS Pharmacy</strong><br>1569 1st Ave, New York, NY 10028<br><a href='tel:2122495198'>212-249-5198</a>")
+  .bindTooltip('CVS Pharmacy');
         L.marker([40.75785, -73.96761], { icon: markerIcon })
             .addTo(map)
             .bindPopup("<strong>Meds Pharmacy</strong><br>1104 2nd Ave, New York, NY 10022<br><a href='tel:2123716000'>212-371-6000</a>")
