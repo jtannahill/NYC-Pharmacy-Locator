@@ -3,8 +3,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>SPS Pharmacy Map NYC</title>
+      <meta charset="utf-8">
+  <title>NYC Pharmacy Map</title>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+  <style>
+    #login, #logout {
+      margin: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
@@ -20,6 +27,59 @@
     </style>
 </head>
 <body>
+      <button id="login">Login</button>
+  <button id="logout" style="display:none;">Logout</button>
+
+  <div id="content" style="display:none;">
+    <h1>Protected Pharmacy Map</h1>
+    <!-- Paste your existing map code here -->
+  </div>
+
+  <script>
+    let auth0Client;
+
+    async function initAuth0() {
+      auth0Client = await createAuth0Client({
+        domain: "YOUR_DOMAIN.auth0.com",           // <- Replace with your domain
+        client_id: "YOUR_CLIENT_ID",                // <- Replace with your client ID
+        cacheLocation: "localstorage",
+        useRefreshTokens: true
+      });
+
+      const isAuthenticated = await auth0Client.isAuthenticated();
+
+      if (isAuthenticated) {
+        showContent();
+      } else {
+        const query = window.location.search;
+        if (query.includes("code=") && query.includes("state=")) {
+          await auth0Client.handleRedirectCallback();
+          window.history.replaceState({}, document.title, window.location.pathname);
+          showContent();
+        }
+      }
+
+      document.getElementById("login").addEventListener("click", async () => {
+        await auth0Client.loginWithRedirect({
+          redirect_uri: window.location.href
+        });
+      });
+
+      document.getElementById("logout").addEventListener("click", () => {
+        auth0Client.logout({
+          returnTo: window.location.href
+        });
+      });
+    }
+
+    function showContent() {
+      document.getElementById("content").style.display = "block";
+      document.getElementById("login").style.display = "none";
+      document.getElementById("logout").style.display = "inline";
+    }
+
+    window.onload = initAuth0;
+  </script>
     <h1>NYC Pharmacy Map</h1>
     <div id="map"></div>
 
