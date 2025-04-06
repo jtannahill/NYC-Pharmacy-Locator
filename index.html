@@ -1,47 +1,121 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
-      <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>NYC Pharmacy Map</title>
+
+  <!-- Auth0 -->
   <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    h1 { text-align: center; margin: 15px 0; }
+    #map { height: 60vh; width: 90%; margin: 0 auto; border-radius: 10px; }
+    #controls { text-align: center; margin: 10px auto; }
+    #pharmacy-list { max-width: 700px; margin: 0 auto; padding: 10px; }
+    .pharmacy { padding: 10px; border-bottom: 1px solid #ccc; }
+    .highlight { background-color: #ffffcc; }
+    input[type="text"] { padding: 8px; width: 200px; margin: 5px; }
     #login, #logout {
       margin: 20px;
       padding: 10px 20px;
       font-size: 1rem;
     }
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-        h1 { text-align: center; margin: 15px 0; }
-        #map { height: 60vh; width: 90%; margin: 0 auto; border-radius: 10px; }
-        #controls { text-align: center; margin: 10px auto; }
-        #pharmacy-list { max-width: 700px; margin: 0 auto; padding: 10px; }
-        .pharmacy { padding: 10px; border-bottom: 1px solid #ccc; }
-        .highlight { background-color: #ffffcc; }
-        input[type="text"] { padding: 8px; width: 200px; margin: 5px; }
-    </style>
+  </style>
 </head>
 <body>
-      <button id="login">Login</button>
+  <button id="login">Login</button>
   <button id="logout" style="display:none;">Logout</button>
 
   <div id="content" style="display:none;">
-    <h1>Protected Pharmacy Map</h1>
-    <!-- Paste your existing map code here -->
-  </div>
+    <h1>NYC Pharmacy Map</h1>
 
+    <div id="map"></div>
+
+    <div id="controls">
+      <input type="text" id="searchInput" placeholder="Search pharmacy name...">
+      <input type="text" id="zipInput" placeholder="Patient ZIP...">
+      <button onclick="highlightByZip()">Show Nearby</button>
+    </div>
+
+    <div id="pharmacy-list">
+      <div class="pharmacy" data-lat="40.75785" data-lng="-73.96761" data-name="meds pharmacy" data-zip="10022">
+        <strong>Meds Pharmacy</strong><br>1104 2nd Ave, New York, NY 10022<br><a href='tel:2123716000'>212-371-6000</a>
+      </div>
+      <div class="pharmacy" data-lat="40.75535" data-lng="-73.97271" data-name="duane reade" data-zip="10022">
+        <strong>Duane Reade</strong><br>51st St and Lexington Ave, New York, NY 10022<br><a href='tel:2122078274'>212-207-8274</a>
+      </div>
+      <div class="pharmacy" data-lat="40.75023" data-lng="-73.98561" data-name="capsule pharmacy" data-zip="10018">
+        <strong>Capsule Pharmacy</strong><br>20 W 36th St, New York, NY 10018<br><a href='tel:2126753900'>212-675-3900</a>
+      </div>
+      <div class="pharmacy" data-lat="40.76814" data-lng="-73.96066" data-name="eisler chemists" data-zip="10021">
+        <strong>Eisler Chemists</strong><br>1140 Lexington Ave, New York, NY 10021<br><a href='tel:2127444144'>212-744-4144</a>
+      </div>
+      <div class="pharmacy" data-lat="40.77971" data-lng="-73.95522" data-name="caligor pharmacy" data-zip="10028">
+        <strong>Caligor Pharmacy</strong><br>1226 Lexington Ave, New York, NY 10028<br><a href='tel:2123696000'>212-369-6000</a>
+      </div>
+      <div class="pharmacy" data-lat="40.78088" data-lng="-73.95436" data-name="duane reade" data-zip="10028">
+        <strong>Duane Reade</strong><br>1235 Lexington Ave, New York, NY 10028<br><a href='tel:2125702710'>212-570-2710</a>
+      </div>
+      <div class="pharmacy" data-lat="40.78452" data-lng="-73.95238" data-name="cvs pharmacy" data-zip="10128">
+        <strong>CVS Pharmacy</strong><br>1294 Lexington Ave, New York, NY 10128<br><a href='tel:2129963000'>212-996-3000</a>
+      </div>
+      <div class="pharmacy" data-lat="40.77132" data-lng="-73.94927" data-name="health wise pharmacy" data-zip="10075">
+        <strong>Health Wise Pharmacy</strong><br>1494 York Ave, New York, NY 10075<br><a href='tel:2124725600'>212-472-5600</a>
+      </div>
+      <div class="pharmacy" data-lat="40.7715" data-lng="-73.94913" data-name="walgreens pharmacy" data-zip="10075">
+        <strong>Walgreens Pharmacy</strong><br>1498 York Ave, New York, NY 10075<br><a href='tel:2128798990'>212-879-8990</a>
+      </div>
+      <div class="pharmacy" data-lat="40.78827" data-lng="-73.94319" data-name="metro rx" data-zip="10029">
+        <strong>Metro RX</strong><br>300 E 102nd St, New York, NY 10029<br><a href='tel:2128311222'>212-831-1222</a>
+      </div>
+      <div class="pharmacy" data-lat="40.79177" data-lng="-73.94709" data-name="cvs pharmacy" data-zip="10029">
+        <strong>CVS Pharmacy</strong><br>1500 Lexington Ave, New York, NY 10029<br><a href='tel:2122893846'>212-289-3846</a>
+      </div>
+      <div class="pharmacy" data-lat="40.79125" data-lng="-73.97255" data-name="cvs pharmacy" data-zip="10025">
+        <strong>CVS Pharmacy</strong><br>743 Amsterdam Ave, New York, NY 10025<br><a href='tel:2122800596'>212-280-0596</a>
+      </div>
+      <div class="pharmacy" data-lat="40.7785" data-lng="-73.98333" data-name="joseph’s pharmacy" data-zip="10023">
+        <strong>Joseph’s Pharmacy</strong><br>216 W 72nd St, New York, NY 10023<br><a href='tel:2128751718'>212-875-1718</a>
+      </div>
+      <div class="pharmacy" data-lat="40.77932" data-lng="-73.98249" data-name="duane reade" data-zip="10023">
+        <strong>Duane Reade</strong><br>2069 Broadway, New York, NY 10023<br><a href='tel:2127991067'>212-799-1067</a>
+      </div>
+      <div class="pharmacy" data-lat="40.78363" data-lng="-73.9786" data-name="duane reade" data-zip="10024">
+        <strong>Duane Reade</strong><br>380 Amsterdam Ave, New York, NY 10024<br><a href='tel:2125797246'>212-579-7246</a>
+      </div>
+      <div class="pharmacy" data-lat="40.78902" data-lng="-73.97092" data-name="duane reade" data-zip="10024">
+        <strong>Duane Reade</strong><br>609 Columbus Ave, New York, NY 10024<br><a href='tel:2127244270'>212-724-4270</a>
+      </div>
+      <div class="pharmacy" data-lat="40.78752" data-lng="-73.97518" data-name="cvs pharmacy" data-zip="10024">
+        <strong>CVS Pharmacy</strong><br>540 Amsterdam Ave, New York, NY 10024<br><a href='tel:2127122821'>212-712-2821</a>
+      </div>
+    </div> <!-- End #pharmacy-list -->
+
+    <div id="add-form" style="max-width:700px; margin:20px auto; padding:10px; border-top:1px solid #ccc;">
+      <h3>Add a Pharmacy</h3>
+      <input type="text" id="new-name" placeholder="Name" style="width:100%;padding:8px;margin:4px 0;"><br>
+      <input type="text" id="new-address" placeholder="Address" style="width:100%;padding:8px;margin:4px 0;"><br>
+      <input type="text" id="new-phone" placeholder="Phone" style="width:100%;padding:8px;margin:4px 0;"><br>
+      <input type="text" id="new-lat" placeholder="Latitude" style="width:100%;padding:8px;margin:4px 0;"><br>
+      <input type="text" id="new-lng" placeholder="Longitude" style="width:100%;padding:8px;margin:4px 0;"><br>
+      <button onclick="addPharmacy()">Add Pharmacy</button>
+    </div>
+  </div> <!-- End #content -->
+  <!-- Auth0 Login Logic -->
   <script>
     let auth0Client;
 
     async function initAuth0() {
       auth0Client = await createAuth0Client({
-        domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",           // <- Replace with your domain
-        client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",                // <- Replace with your client ID
+        domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",
+        client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",
         cacheLocation: "localstorage",
         useRefreshTokens: true
       });
@@ -60,15 +134,11 @@
       }
 
       document.getElementById("login").addEventListener("click", async () => {
-        await auth0Client.loginWithRedirect({
-          redirect_uri: window.location.href
-        });
+        await auth0Client.loginWithRedirect({ redirect_uri: window.location.href });
       });
 
       document.getElementById("logout").addEventListener("click", () => {
-        auth0Client.logout({
-          returnTo: window.location.href
-        });
+        auth0Client.logout({ returnTo: window.location.href });
       });
     }
 
@@ -80,284 +150,41 @@
 
     window.onload = initAuth0;
   </script>
-    <h1>NYC Pharmacy Map</h1>
-    <div id="map"></div>
 
-    <div id="controls">
-        <input type="text" id="searchInput" placeholder="Search pharmacy name...">
-        <input type="text" id="zipInput" placeholder="Patient ZIP...">
-        <button onclick="highlightByZip()">Show Nearby</button>
-    </div>
+  <!-- Leaflet Libraries -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
 
-    <div id="pharmacy-list">
-        
-        <div class="pharmacy" data-lat="40.75785" data-lng="-73.96761" data-name="meds pharmacy" data-zip="10022">
-            <strong>Meds Pharmacy</strong><br>1104 2nd Ave, New York, NY 10022<br><a href='tel:2123716000'>212-371-6000</a>
-        </div>
-        <div class="pharmacy" data-lat="40.75535" data-lng="-73.97271" data-name="duane reade" data-zip="10022">
-            <strong>Duane Reade</strong><br>51st St and Lexington Ave, New York, NY 10022<br><a href='tel:2122078274'>212-207-8274</a>
-        </div>
-        <div class="pharmacy" data-lat="40.75023" data-lng="-73.98561" data-name="capsule pharmacy" data-zip="10018">
-            <strong>Capsule Pharmacy</strong><br>20 W 36th St, New York, NY 10018<br><a href='tel:2126753900'>212-675-3900</a>
-        </div>
-        <div class="pharmacy" data-lat="40.76814" data-lng="-73.96066" data-name="eisler chemists" data-zip="10021">
-            <strong>Eisler Chemists</strong><br>1140 Lexington Ave, New York, NY 10021<br><a href='tel:2127444144'>212-744-4144</a>
-        </div>
-        <div class="pharmacy" data-lat="40.77971" data-lng="-73.95522" data-name="caligor pharmacy" data-zip="10028">
-            <strong>Caligor Pharmacy</strong><br>1226 Lexington Ave, New York, NY 10028<br><a href='tel:2123696000'>212-369-6000</a>
-        </div>
-        <div class="pharmacy" data-lat="40.78088" data-lng="-73.95436" data-name="duane reade" data-zip="10028">
-            <strong>Duane Reade</strong><br>1235 Lexington Ave, New York, NY 10028<br><a href='tel:2125702710'>212-570-2710</a>
-        </div>
-        <div class="pharmacy" data-lat="40.78452" data-lng="-73.95238" data-name="cvs pharmacy" data-zip="10128">
-            <strong>CVS Pharmacy</strong><br>1294 Lexington Ave, New York, NY 10128<br><a href='tel:2129963000'>212-996-3000</a>
-        </div>
-        <div class="pharmacy" data-lat="40.77132" data-lng="-73.94927" data-name="health wise pharmacy" data-zip="10075">
-            <strong>Health Wise Pharmacy</strong><br>1494 York Ave, New York, NY 10075<br><a href='tel:2124725600'>212-472-5600</a>
-        </div>
-        <div class="pharmacy" data-lat="40.7715" data-lng="-73.94913" data-name="walgreens pharmacy" data-zip="10075">
-            <strong>Walgreens Pharmacy</strong><br>1498 York Ave, New York, NY 10075<br><a href='tel:2128798990'>212-879-8990</a>
-        </div>
-        <div class="pharmacy" data-lat="40.78827" data-lng="-73.94319" data-name="metro rx" data-zip="10029">
-            <strong>Metro RX</strong><br>300 E 102nd St, New York, NY 10029<br><a href='tel:2128311222'>212-831-1222</a>
-        </div>
-        <div class="pharmacy" data-lat="40.79177" data-lng="-73.94709" data-name="cvs pharmacy" data-zip="10029">
-            <strong>CVS Pharmacy</strong><br>1500 Lexington Ave, New York, NY 10029<br><a href='tel:2122893846'>212-289-3846</a>
-        </div>
-        <div class="pharmacy" data-lat="40.79125" data-lng="-73.97255" data-name="cvs pharmacy" data-zip="10025">
-            <strong>CVS Pharmacy</strong><br>743 Amsterdam Ave, New York, NY 10025<br><a href='tel:2122800596'>212-280-0596</a>
-        </div>
-        <div class="pharmacy" data-lat="40.7785" data-lng="-73.98333" data-name="joseph’s pharmacy" data-zip="10023">
-            <strong>Joseph’s Pharmacy</strong><br>216 W 72nd St, New York, NY 10023<br><a href='tel:2128751718'>212-875-1718</a>
-        </div>
-        <div class="pharmacy" data-lat="40.77932" data-lng="-73.98249" data-name="duane reade" data-zip="10023">
-            <strong>Duane Reade</strong><br>2069 Broadway, New York, NY 10023<br><a href='tel:2127991067'>212-799-1067</a>
-        </div>
-        <div class="pharmacy" data-lat="40.78363" data-lng="-73.9786" data-name="duane reade" data-zip="10024">
-            <strong>Duane Reade</strong><br>380 Amsterdam Ave, New York, NY 10024<br><a href='tel:2125797246'>212-579-7246</a>
-        </div>
-        <div class="pharmacy" data-lat="40.78902" data-lng="-73.97092" data-name="duane reade" data-zip="10024">
-            <strong>Duane Reade</strong><br>609 Columbus Ave, New York, NY 10024<br><a href='tel:2127244270'>212-724-4270</a>
-        </div>
-        <div class="pharmacy" data-lat="40.78752" data-lng="-73.97518" data-name="cvs pharmacy" data-zip="10024">
-            <strong>CVS Pharmacy</strong><br>540 Amsterdam Ave, New York, NY 10024<br><a href='tel:2127122821'>212-712-2821</a>
-        </div>
-        <div class="pharmacy" data-lat="40.77353" data-lng="-73.95878" data-name="duane reade" data-zip="10075">
-    <strong>Duane Reade</strong><br>1091 Lexington Ave, New York, NY 10075<br><a href='tel:2127947100'>212-794-7100</a>
-</div>
-<div class="pharmacy" data-lat="40.75023" data-lng="-73.98561" data-name="cvs pharmacy" data-zip="10018">
-    <strong>CVS Pharmacy</strong><br>20 W 36th St, New York, NY 10018<br><a href='tel:2126753900'>212-675-3900</a>
-</div>
-<div class="pharmacy" data-lat="40.77026" data-lng="-73.95746" data-name="cvs pharmacy" data-zip="10021">
-    <strong>CVS Pharmacy</strong><br>1396 2nd Ave, New York, NY 10021<br><a href='tel:2122495699'>212-249-5699</a>
-</div>
-<div class="pharmacy" data-lat="40.77723" data-lng="-73.95542" data-name="cvs pharmacy" data-zip="10028">
-    <strong>CVS Pharmacy</strong><br>1569 1st Ave, New York, NY 10028<br><a href='tel:2122495198'>212-249-5198</a>
-</div>
-    
-    <div id="add-form" style="max-width:700px; margin:20px auto; padding:10px; border-top:1px solid #ccc;">
-        <h3>Add a Pharmacy</h3>
-        <input type="text" id="new-name" placeholder="Name" style="width:100%;padding:8px;margin:4px 0;"><br>
-        <input type="text" id="new-address" placeholder="Address" style="width:100%;padding:8px;margin:4px 0;"><br>
-        <input type="text" id="new-phone" placeholder="Phone" style="width:100%;padding:8px;margin:4px 0;"><br>
-        <input type="text" id="new-lat" placeholder="Latitude" style="width:100%;padding:8px;margin:4px 0;"><br>
-        <input type="text" id="new-lng" placeholder="Longitude" style="width:100%;padding:8px;margin:4px 0;"><br>
-        <button onclick="addPharmacy()">Add Pharmacy</button>
-    </div>
-</div>
+  <!-- Map & Pharmacy Script -->
+  <script>
+    const zipCentroids = {
+      "10001": [40.7506, -73.9972], "10002": [40.717, -73.987], "10003": [40.7314, -73.9897],
+      "10021": [40.7687, -73.9601], "10022": [40.7577, -73.9674], "10023": [40.7763, -73.9846],
+      "10024": [40.7865, -73.974], "10025": [40.799, -73.968], "10028": [40.7769, -73.9545],
+      "10029": [40.7916, -73.9453], "10075": [40.7734, -73.9542], "10128": [40.783, -73.95]
+    };
 
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const map = L.map('map').setView([40.7831, -73.9712], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'Map data © OpenStreetMap contributors'
-            }).addTo(map);
+    function toRad(x) { return x * Math.PI / 180; }
 
-            const markerIcon = L.AwesomeMarkers.icon({
-                icon: 'plus-sign',
-                prefix: 'glyphicon',
-                markerColor: 'green',
-                iconColor: 'white'
-            });
-
-            L.marker([40.77353, -73.95878], { icon: markerIcon })
-  .addTo(map)
-  .bindPopup("<strong>Duane Reade</strong><br>1091 Lexington Ave, New York, NY 10075<br><a href='tel:2127947100'>212-794-7100</a>")
-  .bindTooltip('Duane Reade');
-L.marker([40.75023, -73.98561], { icon: markerIcon })
-  .addTo(map)
-  .bindPopup("<strong>CVS Pharmacy</strong><br>20 W 36th St, New York, NY 10018<br><a href='tel:2126753900'>212-675-3900</a>")
-  .bindTooltip('CVS Pharmacy');
-L.marker([40.77026, -73.95746], { icon: markerIcon })
-  .addTo(map)
-  .bindPopup("<strong>CVS Pharmacy</strong><br>1396 2nd Ave, New York, NY 10021<br><a href='tel:2122495699'>212-249-5699</a>")
-  .bindTooltip('CVS Pharmacy');
-L.marker([40.77723, -73.95542], { icon: markerIcon })
-  .addTo(map)
-  .bindPopup("<strong>CVS Pharmacy</strong><br>1569 1st Ave, New York, NY 10028<br><a href='tel:2122495198'>212-249-5198</a>")
-  .bindTooltip('CVS Pharmacy');
-        L.marker([40.75785, -73.96761], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Meds Pharmacy</strong><br>1104 2nd Ave, New York, NY 10022<br><a href='tel:2123716000'>212-371-6000</a>")
-            .bindTooltip('Meds Pharmacy');
-        L.marker([40.75535, -73.97271], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Duane Reade</strong><br>51st St and Lexington Ave, New York, NY 10022<br><a href='tel:2122078274'>212-207-8274</a>")
-            .bindTooltip('Duane Reade');
-        L.marker([40.75023, -73.98561], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Capsule Pharmacy</strong><br>20 W 36th St, New York, NY 10018<br><a href='tel:2126753900'>212-675-3900</a>")
-            .bindTooltip('Capsule Pharmacy');
-        L.marker([40.76814, -73.96066], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Eisler Chemists</strong><br>1140 Lexington Ave, New York, NY 10021<br><a href='tel:2127444144'>212-744-4144</a>")
-            .bindTooltip('Eisler Chemists');
-        L.marker([40.77971, -73.95522], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Caligor Pharmacy</strong><br>1226 Lexington Ave, New York, NY 10028<br><a href='tel:2123696000'>212-369-6000</a>")
-            .bindTooltip('Caligor Pharmacy');
-        L.marker([40.78088, -73.95436], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Duane Reade</strong><br>1235 Lexington Ave, New York, NY 10028<br><a href='tel:2125702710'>212-570-2710</a>")
-            .bindTooltip('Duane Reade');
-        L.marker([40.78452, -73.95238], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>CVS Pharmacy</strong><br>1294 Lexington Ave, New York, NY 10128<br><a href='tel:2129963000'>212-996-3000</a>")
-            .bindTooltip('CVS Pharmacy');
-        L.marker([40.77132, -73.94927], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Health Wise Pharmacy</strong><br>1494 York Ave, New York, NY 10075<br><a href='tel:2124725600'>212-472-5600</a>")
-            .bindTooltip('Health Wise Pharmacy');
-        L.marker([40.7715, -73.94913], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Walgreens Pharmacy</strong><br>1498 York Ave, New York, NY 10075<br><a href='tel:2128798990'>212-879-8990</a>")
-            .bindTooltip('Walgreens Pharmacy');
-        L.marker([40.78827, -73.94319], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Metro RX</strong><br>300 E 102nd St, New York, NY 10029<br><a href='tel:2128311222'>212-831-1222</a>")
-            .bindTooltip('Metro RX');
-        L.marker([40.79177, -73.94709], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>CVS Pharmacy</strong><br>1500 Lexington Ave, New York, NY 10029<br><a href='tel:2122893846'>212-289-3846</a>")
-            .bindTooltip('CVS Pharmacy');
-        L.marker([40.79125, -73.97255], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>CVS Pharmacy</strong><br>743 Amsterdam Ave, New York, NY 10025<br><a href='tel:2122800596'>212-280-0596</a>")
-            .bindTooltip('CVS Pharmacy');
-        L.marker([40.7785, -73.98333], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Joseph’s Pharmacy</strong><br>216 W 72nd St, New York, NY 10023<br><a href='tel:2128751718'>212-875-1718</a>")
-            .bindTooltip('Joseph’s Pharmacy');
-        L.marker([40.77932, -73.98249], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Duane Reade</strong><br>2069 Broadway, New York, NY 10023<br><a href='tel:2127991067'>212-799-1067</a>")
-            .bindTooltip('Duane Reade');
-        L.marker([40.78363, -73.9786], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Duane Reade</strong><br>380 Amsterdam Ave, New York, NY 10024<br><a href='tel:2125797246'>212-579-7246</a>")
-            .bindTooltip('Duane Reade');
-        L.marker([40.78902, -73.97092], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>Duane Reade</strong><br>609 Columbus Ave, New York, NY 10024<br><a href='tel:2127244270'>212-724-4270</a>")
-            .bindTooltip('Duane Reade');
-        L.marker([40.78752, -73.97518], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup("<strong>CVS Pharmacy</strong><br>540 Amsterdam Ave, New York, NY 10024<br><a href='tel:2127122821'>212-712-2821</a>")
-            .bindTooltip('CVS Pharmacy');
-
-            document.getElementById("searchInput").addEventListener("input", function () {
-                const val = this.value.toLowerCase();
-                document.querySelectorAll(".pharmacy").forEach(el => {
-                    el.style.display = el.dataset.name.includes(val) ? "block" : "none";
-                });
-            });
-        });
-
-        function highlightByZip() {
-            const inputZip = document.getElementById("zipInput").value.trim();
-            document.querySelectorAll(".pharmacy").forEach(el => {
-                el.classList.remove("highlight");
-                if (el.dataset.zip === inputZip) {
-                    el.classList.add("highlight");
-                }
-            });
-        }
-    
-function addPharmacy() {
-    const name = document.getElementById("new-name").value.trim();
-    const address = document.getElementById("new-address").value.trim();
-    const phone = document.getElementById("new-phone").value.trim();
-    const lat = parseFloat(document.getElementById("new-lat").value);
-    const lng = parseFloat(document.getElementById("new-lng").value);
-    if (!name || !address || !phone || isNaN(lat) || isNaN(lng)) {
-        alert("Please fill in all fields.");
-        return;
+    function getDistance(lat1, lng1, lat2, lng2) {
+      const R = 3958.8;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLng / 2) ** 2;
+      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
-    const phoneDigits = phone.replace(/[^0-9]/g, '');
-    const popupContent = `<strong>${name}</strong><br>${address}<br><a href='tel:${phoneDigits}'>${phone}</a>`;
-    L.marker([lat, lng], { icon: markerIcon }).addTo(map).bindPopup(popupContent).bindTooltip(name);
-
-    const listContainer = document.getElementById("pharmacy-list");
-    const div = document.createElement("div");
-    div.className = "pharmacy";
-    div.setAttribute("data-lat", lat);
-    div.setAttribute("data-lng", lng);
-    div.setAttribute("data-name", name.toLowerCase());
-    div.setAttribute("data-zip", address.slice(-5));
-    div.innerHTML = `<strong>${name}</strong><br>${address}<br><a href='tel:${phoneDigits}'>${phone}</a>`;
-    listContainer.appendChild(div);
-
-    document.getElementById("new-name").value = "";
-    document.getElementById("new-address").value = "";
-    document.getElementById("new-phone").value = "";
-    document.getElementById("new-lat").value = "";
-    document.getElementById("new-lng").value = "";
-}
-const zipCentroids = {
-  "10001": [40.7506, -73.9972], "10002": [40.717, -73.987], "10003": [40.7314, -73.9897],
-  "10004": [40.7021, -74.0122], "10005": [40.706, -74.0088], "10006": [40.7084, -74.0134],
-  "10007": [40.713, -74.0072], "10009": [40.7278, -73.9787], "10010": [40.739, -73.9826],
-  "10011": [40.7428, -74.0008], "10012": [40.7252, -73.9985], "10013": [40.7203, -74.0052],
-  "10014": [40.7355, -74.006], "10016": [40.7465, -73.978], "10017": [40.752, -73.9725],
-  "10018": [40.7555, -73.9934], "10019": [40.7651, -73.9853], "10020": [40.759, -73.98],
-  "10021": [40.7687, -73.9601], "10022": [40.7577, -73.9674], "10023": [40.7763, -73.9846],
-  "10024": [40.7865, -73.974], "10025": [40.799, -73.968], "10026": [40.802, -73.9542],
-  "10027": [40.8132, -73.9531], "10028": [40.7769, -73.9545], "10029": [40.7916, -73.9453],
-  "10030": [40.8185, -73.9426], "10031": [40.8253, -73.9503], "10032": [40.838, -73.9442],
-  "10033": [40.8504, -73.937], "10034": [40.8677, -73.9225], "10035": [40.7969, -73.9326],
-  "10036": [40.7595, -73.9918], "10037": [40.8149, -73.9403], "10038": [40.7092, -74.0022],
-  "10039": [40.8252, -73.9374], "10040": [40.8571, -73.9289], "10044": [40.7618, -73.9493], // Roosevelt Island
-  "10065": [40.7644, -73.9622], "10069": [40.775, -73.9901], "10075": [40.7734, -73.9542],
-  "10128": [40.783, -73.95]
-};
-
-function toRad(x) {
-    return x * Math.PI / 180;
-}
-
-function getDistance(lat1, lng1, lat2, lng2) {
-    const R = 3958.8;
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-              Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-}
-
-function highlightByZip() {
-    const zip = document.getElementById("zipInput").value.trim();
-    const center = zipCentroids[zip];
-    if (!center) {
+    function highlightByZip() {
+      const zip = document.getElementById("zipInput").value.trim();
+      const center = zipCentroids[zip];
+      if (!center) {
         alert("ZIP not recognized or supported.");
         return;
-    }
+      }
 
-    document.querySelectorAll(".pharmacy").forEach(el => {
+      document.querySelectorAll(".pharmacy").forEach(el => {
         el.classList.remove("highlight");
         el.querySelector(".distance")?.remove();
 
@@ -366,7 +193,7 @@ function highlightByZip() {
         const dist = getDistance(center[0], center[1], lat, lng);
 
         if (dist <= 0.5) {
-            el.classList.add("highlight");
+          el.classList.add("highlight");
         }
 
         const distEl = document.createElement("div");
@@ -375,8 +202,83 @@ function highlightByZip() {
         distEl.style.color = "#555";
         distEl.textContent = `Distance: ${dist.toFixed(2)} mi`;
         el.appendChild(distEl);
+      });
+    }
+
+    function addPharmacy() {
+      const name = document.getElementById("new-name").value.trim();
+      const address = document.getElementById("new-address").value.trim();
+      const phone = document.getElementById("new-phone").value.trim();
+      const lat = parseFloat(document.getElementById("new-lat").value);
+      const lng = parseFloat(document.getElementById("new-lng").value);
+
+      if (!name || !address || !phone || isNaN(lat) || isNaN(lng)) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const phoneDigits = phone.replace(/[^0-9]/g, '');
+      const popupContent = `<strong>${name}</strong><br>${address}<br><a href='tel:${phoneDigits}'>${phone}</a>`;
+
+      const markerIcon = L.AwesomeMarkers.icon({
+        icon: 'plus-sign',
+        prefix: 'glyphicon',
+        markerColor: 'green',
+        iconColor: 'white'
+      });
+
+      L.marker([lat, lng], { icon: markerIcon }).addTo(map).bindPopup(popupContent).bindTooltip(name);
+
+      const listContainer = document.getElementById("pharmacy-list");
+      const div = document.createElement("div");
+      div.className = "pharmacy";
+      div.setAttribute("data-lat", lat);
+      div.setAttribute("data-lng", lng);
+      div.setAttribute("data-name", name.toLowerCase());
+      div.setAttribute("data-zip", address.slice(-5));
+      div.innerHTML = `<strong>${name}</strong><br>${address}<br><a href='tel:${phoneDigits}'>${phone}</a>`;
+      listContainer.appendChild(div);
+
+      document.getElementById("new-name").value = "";
+      document.getElementById("new-address").value = "";
+      document.getElementById("new-phone").value = "";
+      document.getElementById("new-lat").value = "";
+      document.getElementById("new-lng").value = "";
+    }
+
+    let map;
+    document.addEventListener("DOMContentLoaded", function () {
+      map = L.map('map').setView([40.7831, -73.9712], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © OpenStreetMap contributors'
+      }).addTo(map);
+
+      const markerIcon = L.AwesomeMarkers.icon({
+        icon: 'plus-sign',
+        prefix: 'glyphicon',
+        markerColor: 'green',
+        iconColor: 'white'
+      });
+
+      document.querySelectorAll(".pharmacy").forEach(el => {
+        const lat = parseFloat(el.dataset.lat);
+        const lng = parseFloat(el.dataset.lng);
+        const name = el.dataset.name;
+        const html = el.innerHTML;
+
+        L.marker([lat, lng], { icon: markerIcon })
+          .addTo(map)
+          .bindPopup(html)
+          .bindTooltip(name);
+      });
+
+      document.getElementById("searchInput").addEventListener("input", function () {
+        const val = this.value.toLowerCase();
+        document.querySelectorAll(".pharmacy").forEach(el => {
+          el.style.display = el.dataset.name.includes(val) ? "block" : "none";
+        });
+      });
     });
-}
-</script>
+  </script>
 </body>
 </html>
