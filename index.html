@@ -114,12 +114,12 @@
 
     async function initAuth0() {
       auth0Client = await createAuth0Client({
-        domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",
-        client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",
+  domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",
+  client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",
         redirect_uri: "https://jtannahill.github.io/pharmacy-map/",
         cacheLocation: "localstorage",
-        useRefreshTokens: true
-      });
+        useRefreshTokens: true,
+     });
 
       const isAuthenticated = await auth0Client.isAuthenticated();
 
