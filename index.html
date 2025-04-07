@@ -310,35 +310,15 @@ body.dark #map {
         iconColor: 'white'
       });
 
-      document.querySelectorAll(".pharmacy").forEach(el => {
-        const lat = parseFloat(el.dataset.lat);
-        const lng = parseFloat(el.dataset.lng);
-        const name = el.dataset.name;
-        const html = el.innerHTML;
-
-        L.marker([lat, lng], { icon: markerIcon })
-          .addTo(map)
-          .bindPopup(html)
-          .bindTooltip(name);
-      });
-
-      document.getElementById("searchInput").addEventListener("input", function () {
-        const val = this.value.toLowerCase();
-        document.querySelectorAll(".pharmacy").forEach(el => {
-          el.style.display = el.dataset.name.includes(val) ? "block" : "none";
-        });
-      });
-    });
-
-  window.onload = async () => {
+     window.onload = async () => {
   await initAuth0();
 
+  // 🌗 DARK MODE
   const darkToggle = document.getElementById("toggle-dark");
   if (localStorage.getItem("darkMode") === "on") {
     document.body.classList.add("dark");
     if (darkToggle) darkToggle.textContent = "☀️ Light Mode";
   }
-
   if (darkToggle) {
     darkToggle.addEventListener("click", () => {
       document.body.classList.toggle("dark");
@@ -347,6 +327,31 @@ body.dark #map {
       darkToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
     });
   }
+
+  // 🗺️ MAP MARKERS + SEARCH FILTER
+  document.querySelectorAll(".pharmacy").forEach(el => {
+    const lat = parseFloat(el.dataset.lat);
+    const lng = parseFloat(el.dataset.lng);
+    const name = el.dataset.name;
+    const html = el.innerHTML;
+
+    L.marker([lat, lng], { icon: markerIcon })
+      .addTo(map)
+      .bindPopup(html)
+      .bindTooltip(name);
+  });
+
+  // 🔍 NAME/STREET/ZIP SEARCH
+  document.getElementById("searchInput").addEventListener("input", function () {
+    const val = this.value.toLowerCase();
+    document.querySelectorAll(".pharmacy").forEach(el => {
+      const name = el.dataset.name || '';
+      const street = el.dataset.street || '';
+      const borough = el.dataset.borough || '';
+      const match = name.includes(val) || street.includes(val) || borough.includes(val);
+      el.style.display = match ? "block": "none";
+    });
+  });
 };
 </script>
 </body>
