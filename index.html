@@ -156,7 +156,6 @@ async function initAuth0() {
       document.getElementById("logout").addEventListener("click", () => {
         auth0Client.logout({ returnTo: window.location.href });
       });
-    }
 
     function showContent() {
       document.getElementById("content").style.display = "block";
@@ -361,7 +360,6 @@ async function initAuth0() {
       el.style.display = match ? "block": "none";
     });
   });
-};
 </script>
 </body>
 </html>
