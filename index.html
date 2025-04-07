@@ -301,20 +301,7 @@ async function initAuth0() {
     }
 
     let map;
-    document.addEventListener("DOMContentLoaded", function () {
-      map = L.map('map').setView([40.7831, -73.9712], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data © OpenStreetMap contributors'
-      }).addTo(map);
-
-      const markerIcon = L.AwesomeMarkers.icon({
-        icon: 'plus-sign',
-        prefix: 'glyphicon',
-        markerColor: 'green',
-        iconColor: 'white'
-      });
-
-     window.onload = async () => {
+window.onload = async () => {
   await initAuth0();
 
   // 🌗 DARK MODE
@@ -329,14 +316,23 @@ async function initAuth0() {
       const isDark = document.body.classList.contains("dark");
       localStorage.setItem("darkMode", isDark ? "on" : "off");
       darkToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-   });
+    });
   }
 
-  // ... also include your map + search logic here
-}; // ✅ this is easy to miss!
+  // 🗺️ MAP INIT
+  map = L.map('map').setView([40.7831, -73.9712], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data © OpenStreetMap contributors'
+  }).addTo(map);
 
+  const markerIcon = L.AwesomeMarkers.icon({
+    icon: 'plus-sign',
+    prefix: 'glyphicon',
+    markerColor: 'green',
+    iconColor: 'white'
+  });
 
-  // 🗺️ MAP MARKERS + SEARCH FILTER
+  // 🗺️ MAP MARKERS
   document.querySelectorAll(".pharmacy").forEach(el => {
     const lat = parseFloat(el.dataset.lat);
     const lng = parseFloat(el.dataset.lng);
@@ -357,7 +353,7 @@ async function initAuth0() {
       const street = el.dataset.street || '';
       const borough = el.dataset.borough || '';
       const match = name.includes(val) || street.includes(val) || borough.includes(val);
-      el.style.display = match ? "block": "none";
+      el.style.display = match ? "block" : "none";
     });
   });
 </script>
