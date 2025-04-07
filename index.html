@@ -329,27 +329,25 @@ body.dark #map {
         });
       });
     });
-  </script>
-  <script>
-  document.getElementById("toggle-dark").addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    
-    // Optional: save preference
-    const isDark = document.body.classList.contains("dark");
-    localStorage.setItem("darkMode", isDark ? "on" : "off");
-    
-    // Optional: change button label
-    document.getElementById("toggle-dark").textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-  });
 
-  // Optional: load saved preference
-  window.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("darkMode") === "on") {
-      document.body.classList.add("dark");
-      document.getElementById("toggle-dark").textContent = "☀️ Light Mode";
-    }
-  });
+  window.onload = async () => {
+  await initAuth0();
+
+  const darkToggle = document.getElementById("toggle-dark");
+  if (localStorage.getItem("darkMode") === "on") {
+    document.body.classList.add("dark");
+    if (darkToggle) darkToggle.textContent = "☀️ Light Mode";
+  }
+
+  if (darkToggle) {
+    darkToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("darkMode", isDark ? "on" : "off");
+      darkToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+  }
+};
 </script>
-
 </body>
 </html>
