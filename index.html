@@ -355,7 +355,10 @@ window.onload = async () => {
       const match = name.includes(val) || street.includes(val) || borough.includes(val);
       el.style.display = match ? "block" : "none";
     });
-  });
+  }); // ← this was missing
+
+}; // ← this closes window.onload ✅
+
 </script>
 </body>
 </html>
