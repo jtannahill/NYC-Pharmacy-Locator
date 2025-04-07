@@ -123,27 +123,32 @@ body.dark #map {
     let auth0Client;
 
 async function initAuth0() {
+  auth0Client = await createAuth0Client({
+    domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",
+    client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",
+    redirect_uri: window.location.origin + window.location.pathname,  // ← safest for GitHub Pages
+    cacheLocation: "localstorage",
+    useRefreshTokens: true
+  });
+
+  try {
+    // Handle login redirect
+    const query = window.location.search;
+    if (query.includes("code=") && query.includes("state=")) {
       await auth0Client.handleRedirectCallback();
-  domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",
-  client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",
-        redirect_uri: "https://github.com/jtannahill/nyc-pharmacy-locator",
-        cacheLocation: "localstorage",
-        useRefreshTokens: true,
-     });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
-      const isAuthenticated = await auth0Client.isAuthenticated();
-
-      if (isAuthenticated) {
-        showContent();
-      } else {
-        const query = window.location.search;
-        if (query.includes("code=") && query.includes("state=")) {
-          await auth0Client.handleRedirectCallback();
-          window.history.replaceState({}, document.title, window.location.pathname);
-          showContent();
-        }
-      }
-
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    if (isAuthenticated) {
+      showContent();
+    }
+  } catch (err) {
+    console.error("Auth0 callback error:", err);
+    const msg = new URLSearchParams(window.location.search).get("error_description");
+    alert("Login failed: " + (msg || err.message));
+  }
+}
       document.getElementById("login").addEventListener("click", async () => {
         await auth0Client.loginWithRedirect({ redirect_uri: window.location.href });
       });
