@@ -122,8 +122,8 @@ body.dark #map {
   <script>
     let auth0Client;
 
-    async function initAuth0() {
-      auth0Client = await createAuth0Client({
+async function initAuth0() {
+      await auth0Client.handleRedirectCallback();
   domain: "dev-kbv6lh4quz7r4ydl.us.auth0.com",
   client_id: "yPaX3hAa70Fb7ZfFIJEjJac7jI9Q4hrT",
         redirect_uri: "https://github.com/jtannahill/nyc-pharmacy-locator",
