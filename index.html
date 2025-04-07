@@ -330,8 +330,12 @@ async function initAuth0() {
       const isDark = document.body.classList.contains("dark");
       localStorage.setItem("darkMode", isDark ? "on" : "off");
       darkToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-    });
+   });
   }
+
+  // ... also include your map + search logic here
+}; // ✅ this is easy to miss!
+
 
   // 🗺️ MAP MARKERS + SEARCH FILTER
   document.querySelectorAll(".pharmacy").forEach(el => {
